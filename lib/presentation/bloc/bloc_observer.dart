@@ -1,23 +1,25 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotify_clone/logger.dart';
+
+const _h = 'bloc_observer';
 
 class MyBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase bloc) {
-    log("Created: $bloc");
     super.onCreate(bloc);
+    logInfo(_h, 'Bloc created: ${bloc.runtimeType}');
   }
 
   @override
   void onChange(BlocBase bloc, Change change) {
-    log("Change in $bloc: $change");
     super.onChange(bloc, change);
+    logWarning(_h,
+        'onChange -- ${bloc.runtimeType} from State ${change.currentState.runtimeType} to State ${change.nextState.runtimeType}');
   }
 
   @override
   void onClose(BlocBase bloc) {
-    log("Closed: $bloc");
     super.onClose(bloc);
+    logInfo(_h, 'onClose -- ${bloc.runtimeType}');
   }
 }
