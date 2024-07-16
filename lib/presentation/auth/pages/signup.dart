@@ -7,6 +7,7 @@ import 'package:spotify_clone/domain/usecases/auth/signup.dart';
 import 'package:spotify_clone/gen/assets.gen.dart';
 import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/router/app_router.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 
 @RoutePage()
 class SignupPage extends StatelessWidget {
@@ -56,11 +57,12 @@ class SignupPage extends StatelessWidget {
                         l,
                       ));
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                    }, (r) {
+                    }, (r) async {
                       context.router.pushAndPopUntil(
                         const HomeRoute(),
                         predicate: (route) => false,
                       );
+                      await sl<AnalyticsService>().logSignUp();
                     });
                   },
                   title: "Register")

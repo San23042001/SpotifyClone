@@ -5,6 +5,8 @@ import 'package:spotify_clone/common/helpers/is_dark_mode.dart';
 import 'package:spotify_clone/common/widgets/appbar/app_bar.dart';
 import 'package:spotify_clone/common/widgets/favorite_button/favorite_button.dart';
 import 'package:spotify_clone/core/configs/constants/app_urls.dart';
+import 'package:spotify_clone/domain/usecases/auth/sign_out.dart';
+import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/profile/bloc/favorite_song_cubit.dart';
 import 'package:spotify_clone/presentation/profile/bloc/favorite_song_state.dart';
 import 'package:spotify_clone/presentation/profile/bloc/profile_info_cubit.dart';
@@ -18,9 +20,28 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BasicAppBar(
-        title: Text("Profile"),
-        background: Color(0xff2C2B2B),
+      appBar: BasicAppBar(
+        title: const Text("Profile"),
+        background: context.isDarkMode ? const Color(0xff2C2B2B) : Colors.white,
+        action: IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () async {
+            var result = await sl<SignOutUserUseCase>().call();
+            // l - signup failed r- request sucessful
+            result.fold((l) {
+              var snackbar = SnackBar(
+                  content: Text(
+                l,
+              ));
+              ScaffoldMessenger.of(context).showSnackBar(snackbar);
+            }, (r) {
+              context.router.pushAndPopUntil(
+                const SignupOrSigininRoute(),
+                predicate: (route) => false,
+              );
+            });
+          },
+        ),
       ),
       body: Column(
         children: [

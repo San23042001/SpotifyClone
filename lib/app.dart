@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_clone/core/configs/theme/app_theme.dart';
+import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/bloc/theme_cubit.dart';
 import 'package:spotify_clone/presentation/router/app_router.dart';
 import 'package:spotify_clone/presentation/router/my_route_observer.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 
 class SpotifyApp extends StatefulWidget {
   const SpotifyApp({super.key});
@@ -27,6 +29,7 @@ class _SpotifyAppState extends State<SpotifyApp> {
           routerConfig: _appRouter.config(
             navigatorObservers: () => [
               MyRouteObserver(),
+              sl<AnalyticsService>().getAnalyticsObserver(),
             ],
           ),
         ),

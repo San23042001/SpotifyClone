@@ -4,6 +4,8 @@ import 'package:spotify_clone/common/bloc/favorite_button/favorite_button_cubit.
 import 'package:spotify_clone/common/bloc/favorite_button/favorite_button_state.dart';
 import 'package:spotify_clone/core/configs/theme/app_colors.dart';
 import 'package:spotify_clone/domain/entities/song/song.dart';
+import 'package:spotify_clone/get_it/service_locator.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 
 class FavoriteButton extends StatelessWidget {
   final SongEntity songEntity;
@@ -24,6 +26,8 @@ class FavoriteButton extends StatelessWidget {
                   await context
                       .read<FavoriteButtonCubit>()
                       .favoriteButtonUpdated(songEntity.songId);
+                  await sl<AnalyticsService>()
+                      .logFavoriteSong(songEntity.title);
                   if (function != null) {
                     function!();
                   }
@@ -39,10 +43,12 @@ class FavoriteButton extends StatelessWidget {
 
           if (state is FavoriteButtonUpdated) {
             return IconButton(
-              onPressed: () {
-                context
+              onPressed: () async {
+                await context
                     .read<FavoriteButtonCubit>()
                     .favoriteButtonUpdated(songEntity.songId);
+
+                await sl<AnalyticsService>().logFavoriteSong(songEntity.title);
               },
               icon: Icon(
                 state.isFavorite

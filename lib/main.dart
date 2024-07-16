@@ -10,8 +10,10 @@ import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/bloc/bloc_observer.dart';
 
 Future<void> main() async {
+  
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Bloc.observer = MyBlocObserver();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -22,6 +24,6 @@ Future<void> main() async {
   FlutterNativeSplash.remove();
 
   await initializeDependencies();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const SpotifyApp());
 }

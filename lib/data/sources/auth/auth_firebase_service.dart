@@ -6,6 +6,8 @@ import 'package:spotify_clone/data/model/auth/create_user_req.dart';
 import 'package:spotify_clone/data/model/auth/sigin_user_req.dart';
 import 'package:spotify_clone/data/model/auth/user.dart';
 import 'package:spotify_clone/domain/entities/auth/user.dart';
+import 'package:spotify_clone/get_it/service_locator.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 
 abstract class AuthFirebaseService {
   Future<Either> signup(CreateUserReq createUserReq);
@@ -13,14 +15,17 @@ abstract class AuthFirebaseService {
   Future<Either> sigin(SignUserReq signUserReq);
 
   Future<Either> getUser();
+  Future<Either> signOut();
 }
 
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
   @override
   Future<Either> sigin(SignUserReq signUserReq) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      var authresult = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: signUserReq.email, password: signUserReq.password);
+      await sl<AnalyticsService>().setUserProperties(
+          userId: authresult.user!.uid, userName: authresult.user!.displayName);
 
       return const Right('Sigin was Sucessfull');
     } on FirebaseAuthException catch (e) {
@@ -43,6 +48,9 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
           .collection('Users')
           .doc(data.user?.uid)
           .set({'name': createUserReq.fullName, 'email': data.user?.email});
+
+      await sl<AnalyticsService>().setUserProperties(
+          userId: data.user!.uid, userName: data.user!.displayName);
 
       return const Right('Signup was Sucessfull');
     } on FirebaseAuthException catch (e) {
@@ -75,6 +83,16 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
       return Right(userEntity);
     } catch (e) {
       return const Left('An error occured');
+    }
+  }
+
+  @override
+  Future<Either> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      return const Right('Sign-out was successful');
+    } catch (e) {
+      return const Left('An error occurred during sign-out');
     }
   }
 }

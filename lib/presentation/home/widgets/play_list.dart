@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_clone/common/helpers/is_dark_mode.dart';
 import 'package:spotify_clone/common/widgets/favorite_button/favorite_button.dart';
 import 'package:spotify_clone/core/configs/theme/app_colors.dart';
+import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/home/bloc/play_list_cubit.dart';
 import 'package:spotify_clone/presentation/router/app_router.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 import '../../../domain/entities/song/song.dart';
 import '../bloc/play_list_state.dart';
 
@@ -68,8 +70,9 @@ class PlayList extends StatelessWidget {
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
               context.pushRoute(SongPlayerRoute(songEntity: songs[index]));
+              await sl<AnalyticsService>().logSongViewed(songs[index].title);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

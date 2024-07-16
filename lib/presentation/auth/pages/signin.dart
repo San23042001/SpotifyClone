@@ -7,6 +7,7 @@ import 'package:spotify_clone/domain/usecases/auth/signin.dart';
 import 'package:spotify_clone/gen/assets.gen.dart';
 import 'package:spotify_clone/get_it/service_locator.dart';
 import 'package:spotify_clone/presentation/router/app_router.dart';
+import 'package:spotify_clone/services/analytics_service.dart';
 
 @RoutePage()
 class SigninPage extends StatelessWidget {
@@ -48,11 +49,12 @@ class SigninPage extends StatelessWidget {
                         l,
                       ));
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                    }, (r) {
+                    }, (r) async {
                       context.router.pushAndPopUntil(
                         const HomeRoute(),
                         predicate: (route) => false,
                       );
+                      await sl<AnalyticsService>().logLogin();
                     });
                   },
                   title: "Sign In")
