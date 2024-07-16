@@ -43,14 +43,16 @@ class ProfilePage extends StatelessWidget {
           },
         ),
       ),
-      body: Column(
-        children: [
-          _profileInfo(context),
-          const SizedBox(
-            height: 30,
-          ),
-          _favoriteSongs()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _profileInfo(context),
+            const SizedBox(
+              height: 30,
+            ),
+            _favoriteSongs()
+          ],
+        ),
       ),
     );
   }
